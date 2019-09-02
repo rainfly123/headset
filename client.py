@@ -5,29 +5,28 @@ import time
 import threading
 import hashlib
  
-
 def on_message(client, userdata, msg):
-    print (msg.topic +":" + str(msg.payload))
+    print "headset: %s topic: %s payload: %s"%(userdata.uuid, msg.topic, str(msg.payload))
+
+def on_connect(client, userdata, flags, rc):
+    print "headset: %s Connected: %s "%(userdata.uuid, str(rc))
 
 class Headset(threading.Thread):
 
-    HOST = "mqtt.smartheadset.qctchina.top"
-    #HOST = "localhost"
+    #HOST = "mqtt.smartheadset.qctchina.top"
+    HOST = "localhost"
     PORT = 1883
 
-    def on_connect(client, userdata, flags, rc):
-        print "headset: %s Connected: %s "%(userdata.uuid, str(rc))
 
-    def on_message(client, userdata, msg):
-        print "headset: %s topic: %s payload: %s"%(userdata.uuid, msg.topic, str(msg.payload))
 
     def __init__(self):
         threading.Thread.__init__(self)
-        self._client = mqtt.Client(userdata=self)
+        self._mqtt = mqtt.Client(userdata=self)
         self._uuid =  "123456123456"
         self._sd = 4 #4GB
         self._level = 0 
         self._wifi = 1 
+        self.playlist = list()
 
     @property
     def uuid(self):
@@ -63,13 +62,16 @@ class Headset(threading.Thread):
         md5.update(self._uuid + "qtchina")
         password = md5.hexdigest()
         print password
-        self._client.username_pw_set(self._uuid, password)
-        self._client.on_connect = Headset.on_connect
-        self._client.on_message = Headset.on_connect
-        self._client.connect(Headset.HOST, Headset.PORT, 60)
-        self._client.loop_start()
+        self._mqtt.username_pw_set(self._uuid, password)
+        self._mqtt.on_connect = on_connect
+        self._mqtt.on_message = on_message
+        self._mqtt.connect(Headset.HOST, Headset.PORT, 60)
+        self._mqtt.subscribe('/system/time',qos=2)
+        self._mqtt.loop_start()
         while True:
-            pass
+           time.sleep(1)
+           for mp3 in self.playlist:
+               print mp3.download_url 
 
 
 
@@ -84,3 +86,4 @@ if __name__ == '__main__':
     print d.level
     print d.wifi
     print d.sd
+    time.sleep(12)
