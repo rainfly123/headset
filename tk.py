@@ -4,10 +4,21 @@ import tkinter as tk
 import time
 import client
 
+TOTAL = 30
+headsets = []
 
 def print_hello():
     print "E"
     app.update_item_status(29, "wifi","69","5GB","download", "red")
+ 
+
+def start_headset():
+    for  s in headsets:
+        s.start()
+
+def exit_loop():
+    for  s in headsets:
+        s.join()
 
 class App():
    def __init__(self):
@@ -20,8 +31,9 @@ class App():
    def create_menu(self):
        menubar = tk.Menu(self.main)
        fmenu = tk.Menu(menubar)
-       for each in ['新建','退出']:
-           fmenu.add_command(label=each, command=print_hello)
+       fmenu.add_command(label='新建', command=print_hello)
+       fmenu.add_command(label='启动', command=start_headset)
+       fmenu.add_command(label='退出', command=exit_loop)
  
        amenu = tk.Menu(menubar)
        for each in ['版权信息','联系我们']:
@@ -106,13 +118,13 @@ app = App()
 if __name__ =='__main__':
     app.create_menu()
     app.create_label()
-    for x in range (30):
+    for x in range (TOTAL):
         s = client.Headset(x)
         s.uuid = "123445"
         s.sd = "8GB"
         s.level = "83"
         app.create_item_bar(x, s.uuid, s.sd) 
         s.viewer(app.update_item_status)
-        s.start()
+        headsets.append(s)
         #app.update_item_status(x, "wifi","69","7GB","download", "blue")
     app.run()
