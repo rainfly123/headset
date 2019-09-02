@@ -18,8 +18,7 @@ class Headset(threading.Thread):
     PORT = 1883
 
 
-
-    def __init__(self):
+    def __init__(self, x):
         threading.Thread.__init__(self)
         self._mqtt = mqtt.Client(userdata=self)
         self._uuid =  "123456123456"
@@ -27,6 +26,8 @@ class Headset(threading.Thread):
         self._level = 0 
         self._wifi = 1 
         self.playlist = list()
+        self._x = x
+        self.viewerfunc = None
 
     @property
     def uuid(self):
@@ -58,6 +59,8 @@ class Headset(threading.Thread):
 
 
     def run(self):
+        if self.viewerfunc != None:
+            self.viewerfunc(self._x, "wifi","69","7GB","started", "blue")
         md5 = hashlib.md5()
         md5.update(self._uuid + "qtchina")
         password = md5.hexdigest()
@@ -70,13 +73,17 @@ class Headset(threading.Thread):
         self._mqtt.loop_start()
         while True:
            time.sleep(1)
-           for mp3 in self.playlist:
-               print mp3.download_url 
+           print "running headset"
+           level = int(time.time()) % 100
+           if self.viewerfunc != None:
+               self.viewerfunc(self._x, "wifi",str(level),"7GB","connected", "blue")
 
+    def viewer(self, func):
+        self.viewerfunc = func
 
 
 if __name__ == '__main__':
-    d = Headset()
+    d = Headset(1)
     d.uuid = "123456123456"
     d.wifi = 2
     d.level = 20
@@ -86,4 +93,3 @@ if __name__ == '__main__':
     print d.level
     print d.wifi
     print d.sd
-    time.sleep(12)
