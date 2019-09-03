@@ -6,14 +6,14 @@ import client
 import tkSimpleDialog as dl  
 import tkinter.messagebox
 
-TOTAL = 30
+TOTAL = 100
 Current = 0
 headsets = []
 
 def auto():
     for x in range (TOTAL):
         s = client.Headset(x)
-        s.uuid = "123445"
+        s.uuid = str(100000000000 + x) 
         s.sd = 8
         s.level = 83
         app.create_item_bar(x, s.uuid, s.sd) 
@@ -76,7 +76,7 @@ class App():
        self.labels = dict()
 
    def create_menu(self):
-       menubar = tk.Menu(self.main)
+       menubar = tk.Menu(self.main, font=("Bold", 12))
        fmenu = tk.Menu(menubar)
        fmenu.add_command(label='自动', command=auto)
        fmenu.add_command(label='新建', command=create)
@@ -94,19 +94,19 @@ class App():
 
    def create_label(self):
        frame = tk.Frame(self.main)
-       label = tk.Label(frame, width=15, text='序号',anchor="center")	
+       label = tk.Label(frame, font=("Arial", 12), width=15, text='序号',anchor="center")	
        label.pack(side="left")
-       label = tk.Label(frame, width=15, text='设备序列号', anchor="center")	
+       label = tk.Label(frame, font=("Arial", 12), width=15, text='设备序列号', anchor="center")	
        label.pack(side="left")
-       label = tk.Label(frame, width=15, text='网络', anchor="center")	
+       label = tk.Label(frame, font=("Arial", 12), width=15, text='网络', anchor="center")	
        label.pack(side="left")
-       label = tk.Label(frame, width=15, text='电池', anchor="center")	
+       label = tk.Label(frame, font=("Arial", 12), width=15, text='电池', anchor="center")	
        label.pack(side="left")
-       label = tk.Label(frame, width=15, text='可用存储', anchor="center")	
+       label = tk.Label(frame, font=("Arial", 12), width=15, text='可用存储', anchor="center")	
        label.pack(side="left")
-       label = tk.Label(frame, width=15, text='总存储', anchor="center")	
+       label = tk.Label(frame, font=("Arial", 12), width=15, text='总存储', anchor="center")	
        label.pack(side="left")
-       label = tk.Label(frame, width=20, text='状态', anchor="center")	
+       label = tk.Label(frame, font=("Arial", 12), width=20, text='状态', anchor="center")	
        label.pack(side="left")
        frame.pack()
    
