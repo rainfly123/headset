@@ -90,7 +90,7 @@ class Headset(threading.Thread):
         self._mqtt.subscribe('/system/time',qos=2)
         self._mqtt.loop_start()
         if self.viewerfunc != None:
-            self.viewerfunc(self._x, "wifi",self._level,self._sd,"connected", "blue")
+            self.viewerfunc(self._x, "wifi",self._level,self._sd,"connected", "yellow")
         while True:
            time.sleep(3)
            for playlist in self.playlists:
@@ -98,7 +98,7 @@ class Headset(threading.Thread):
                if self.viewerfunc != None:
                   avaiable = self._sd - self.total_download/1024/1024/1024
                   self.level -= 1
-                  self.viewerfunc(self._x, "wifi", self.level, avaiable, "downloading", "blue")
+                  self.viewerfunc(self._x, "wifi", self.level, avaiable, "downloading", "green")
 
 
 

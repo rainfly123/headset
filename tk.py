@@ -71,7 +71,7 @@ class App():
    def __init__(self):
        self.main = tk.Tk()
        self.main.title("耳机模拟器")
-       #self.main.geometry('1080x720') 
+       self.main.geometry('1080x720') 
        self.vars = dict()
        self.labels = dict()
 
@@ -94,21 +94,33 @@ class App():
 
    def create_label(self):
        frame = tk.Frame(self.main)
-       label = tk.Label(frame, font=("Arial", 12), width=15, text='序号',anchor="center")	
+       label = tk.Label(frame, font=("Arial", 11), width=15, text='序号',anchor="center")	
        label.pack(side="left")
-       label = tk.Label(frame, font=("Arial", 12), width=15, text='设备序列号', anchor="center")	
+       label = tk.Label(frame, font=("Arial", 11), width=15, text='设备序列号', anchor="center")	
        label.pack(side="left")
-       label = tk.Label(frame, font=("Arial", 12), width=15, text='网络', anchor="center")	
+       label = tk.Label(frame, font=("Arial", 11), width=15, text='网络', anchor="center")	
        label.pack(side="left")
-       label = tk.Label(frame, font=("Arial", 12), width=15, text='电池', anchor="center")	
+       label = tk.Label(frame, font=("Arial", 11), width=15, text='电池', anchor="center")	
        label.pack(side="left")
-       label = tk.Label(frame, font=("Arial", 12), width=15, text='可用存储', anchor="center")	
+       label = tk.Label(frame, font=("Arial", 11), width=15, text='可用存储', anchor="center")	
        label.pack(side="left")
-       label = tk.Label(frame, font=("Arial", 12), width=15, text='总存储', anchor="center")	
+       label = tk.Label(frame, font=("Arial", 11), width=15, text='总存储', anchor="center")	
        label.pack(side="left")
-       label = tk.Label(frame, font=("Arial", 12), width=20, text='状态', anchor="center")	
+       label = tk.Label(frame, font=("Arial", 11), width=20, text='状态', anchor="center")	
        label.pack(side="left")
        frame.pack()
+       self.vscrollbar = tk.Scrollbar(self.main)
+       self.c = tk.Canvas(self.main, background = "#D2D2D2",yscrollcommand=self.vscrollbar.set)
+
+       self.vscrollbar.config(command=self.c.yview)
+       self.vscrollbar.pack(side=tk.RIGHT, fill=tk.Y) 
+
+       self.frame =tk.Frame(self.c) #Create the frame which will hold the widgets
+
+       self.c.pack(side="top", fill="both", expand=True)
+       self.c.create_window(0,0, window=self.frame, anchor="center")
+
+
    
    def update_item_status(self, index, wifi, level, avaiable, status, color):
        #wifi, level, avaiable, status
@@ -120,43 +132,45 @@ class App():
            x['bg'] = color
 
    def create_item_bar(self, index, uuid, sd):
-       frame = tk.Frame(self.main)
        self.vars[index] = [tk.StringVar(), tk.StringVar(), tk.StringVar(), tk.StringVar()]
-
+       frame = tk.Frame(self.frame)
        #index
-       alabel = tk.Label(frame, width=15, text=str(index), justify="center",anchor="center")
+       alabel = tk.Label(frame, width=17, font=("Arial", 12), text=str(index))
        alabel.pack(side="left")
 
        #uuid
-       blabel = tk.Label(frame, width=15, text=uuid)
+       blabel = tk.Label(frame, width=17, font=("Arial", 12), text=uuid)
        blabel.pack(side="left")
 
        #wifi
-       clabel = tk.Label(frame,width=15,  textvariable=self.vars[index][0])
+       clabel = tk.Label(frame, width=17, font=("Arial", 12),  textvariable=self.vars[index][0])
        clabel.pack(side="left")
 
        #level
-       dlabel = tk.Label(frame, width=15, textvariable=self.vars[index][1])
+       dlabel = tk.Label(frame, width=17, font=("Arial", 12), textvariable=self.vars[index][1])
        dlabel.pack(side="left")
 
        #avaiable
-       elabel = tk.Label(frame, width=15, textvariable=self.vars[index][2])
+       elabel = tk.Label(frame, width=17, font=("Arial", 12), textvariable=self.vars[index][2])
        elabel.pack(side="left")
 
        #sd
-       flabel = tk.Label(frame,width=15,  text=str(sd) + "GB")
+       flabel = tk.Label(frame, width=17, font=("Arial", 12),  text=str(sd) + "GB")
        flabel.pack(side="left")
 
        #download
-       glabel = tk.Label(frame,width=15,  textvariable=self.vars[index][3])
+       glabel = tk.Label(frame, width=17,  font=("Arial", 12), textvariable=self.vars[index][3])
        glabel.pack(side="left")
-       frame.pack()
-
+       frame.pack() 
+ 
        self.labels[index] = [alabel, blabel, clabel, dlabel, elabel, flabel, glabel]
        for x in self.labels[index]:
            x['bg'] = "gray"
        for x in self.vars[index]:
            x.set("Unknow")
+
+       self.main.update()
+       self.c.config(scrollregion=self.c.bbox("all"))
 
    def run(self):
        self.main.mainloop()
