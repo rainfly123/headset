@@ -3,8 +3,11 @@
 import tkinter as tk
 import time
 import client
+import tkSimpleDialog as dl  
+import tkinter.messagebox
 
 TOTAL = 30
+Current = 0
 headsets = []
 
 def auto():
@@ -17,10 +20,15 @@ def auto():
         s.viewer(app.update_item_status)
         headsets.append(s)
 
-def print_hello():
-    print "E"
-    app.update_item_status(29, "wifi",69,5,"download", "red")
- 
+def create():
+    global Current
+    guess = myDialog(app.main)  
+    s = client.Headset(Current)
+    s.uuid, s.level, s.sd  = guess.result
+    app.create_item_bar(Current, s.uuid, s.sd) 
+    s.viewer(app.update_item_status)
+    headsets.append(s)
+    Current += 1
 
 def start_headset():
     for  s in headsets:
@@ -29,6 +37,35 @@ def start_headset():
 def exit_loop():
     for  s in headsets:
         s.join()
+
+class myDialog(dl.Dialog):
+    def body(self, master):
+        self.title("添加耳机设备")
+        tk.Label(master, text="设备序列号:").grid(row=0)
+        tk.Label(master, text="电池电量:").grid(row=1)
+        tk.Label(master, text="内存大小:").grid(row=2)
+
+        self.e1 = tk.Entry(master)
+        self.e2 = tk.Entry(master)
+        self.e3 = tk.Entry(master)
+
+        self.e1.grid(row=0, column=1)
+        self.e2.grid(row=1, column=1)
+        self.e3.grid(row=2, column=1)
+        return self.e1 # initial focus
+
+    def apply(self):
+        uuid = self.e1.get()
+        level = int(self.e2.get())
+        sd = int(self.e3.get())
+
+        self.result = uuid,level, sd # or something
+
+def Contact():
+    tkinter.messagebox.showinfo('联系我们','广州市黄浦区天丰路3号启明大厦1楼广州启辰电子公司')
+
+def About():
+    tkinter.messagebox.showinfo('关于我们','广州启辰电子公司')
 
 class App():
    def __init__(self):
@@ -42,13 +79,13 @@ class App():
        menubar = tk.Menu(self.main)
        fmenu = tk.Menu(menubar)
        fmenu.add_command(label='自动', command=auto)
-       fmenu.add_command(label='新建', command=print_hello)
+       fmenu.add_command(label='新建', command=create)
        fmenu.add_command(label='启动', command=start_headset)
        fmenu.add_command(label='退出', command=exit_loop)
  
        amenu = tk.Menu(menubar)
-       for each in ['版权信息','联系我们']:
-           amenu.add_command(label=each, command=print_hello)
+       amenu.add_command(label='关于我们', command=About)
+       amenu.add_command(label='联系我们', command=Contact)
  
        menubar.add_cascade(label='文件',menu=fmenu)
        menubar.add_cascade(label='关于',menu=amenu)
