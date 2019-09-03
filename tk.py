@@ -11,14 +11,16 @@ Current = 0
 headsets = []
 
 def auto():
+    global Current
     for x in range (TOTAL):
-        s = client.Headset(x)
+        s = client.Headset(Current)
         s.uuid = str(100000000000 + x) 
         s.sd = 8
         s.level = 83
-        app.create_item_bar(x, s.uuid, s.sd) 
+        app.create_item_bar(Current, s.uuid, s.sd) 
         s.viewer(app.update_item_status)
         headsets.append(s)
+        Current += 1
 
 def create():
     global Current
@@ -32,7 +34,8 @@ def create():
 
 def start_headset():
     for  s in headsets:
-        s.start()
+        if s.is_alive() == False:
+            s.start()
 
 def exit_loop():
     for  s in headsets:
