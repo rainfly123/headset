@@ -7,9 +7,19 @@ import client
 TOTAL = 30
 headsets = []
 
+def auto():
+    for x in range (TOTAL):
+        s = client.Headset(x)
+        s.uuid = "123445"
+        s.sd = 8
+        s.level = 83
+        app.create_item_bar(x, s.uuid, s.sd) 
+        s.viewer(app.update_item_status)
+        headsets.append(s)
+
 def print_hello():
     print "E"
-    app.update_item_status(29, "wifi","69","5GB","download", "red")
+    app.update_item_status(29, "wifi",69,5,"download", "red")
  
 
 def start_headset():
@@ -31,6 +41,7 @@ class App():
    def create_menu(self):
        menubar = tk.Menu(self.main)
        fmenu = tk.Menu(menubar)
+       fmenu.add_command(label='自动', command=auto)
        fmenu.add_command(label='新建', command=print_hello)
        fmenu.add_command(label='启动', command=start_headset)
        fmenu.add_command(label='退出', command=exit_loop)
@@ -65,8 +76,8 @@ class App():
    def update_item_status(self, index, wifi, level, avaiable, status, color):
        #wifi, level, avaiable, status
        self.vars[index][0].set(wifi)
-       self.vars[index][1].set(level)
-       self.vars[index][2].set(avaiable)
+       self.vars[index][1].set(str(level))
+       self.vars[index][2].set(str(avaiable) + "GB")
        self.vars[index][3].set(status)
        for x in self.labels[index]:
            x['bg'] = color
@@ -96,7 +107,7 @@ class App():
        elabel.pack(side="left")
 
        #sd
-       flabel = tk.Label(frame,width=15,  text=sd)
+       flabel = tk.Label(frame,width=15,  text=str(sd) + "GB")
        flabel.pack(side="left")
 
        #download
@@ -118,13 +129,4 @@ app = App()
 if __name__ =='__main__':
     app.create_menu()
     app.create_label()
-    for x in range (TOTAL):
-        s = client.Headset(x)
-        s.uuid = "123445"
-        s.sd = "8GB"
-        s.level = "83"
-        app.create_item_bar(x, s.uuid, s.sd) 
-        s.viewer(app.update_item_status)
-        headsets.append(s)
-        #app.update_item_status(x, "wifi","69","7GB","download", "blue")
     app.run()

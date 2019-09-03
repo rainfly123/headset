@@ -4,9 +4,26 @@ import json
 import time
 import threading
 import hashlib
- 
+import os
+import urllib2
+
+def  download(url, uuid):
+    path = os.path.join("data", uuid)
+    if os.path.exists(path) is False:
+        os.mkdir(path)
+    fileName = os.path.basename(url)
+    writeFileName = os.path.join(path, fileName)
+    if os.path.exists(writeFileName) is False:
+        downloadFile = urllib2.urlopen(url)
+        with open(writeFileName,'wb') as output:
+            output.write(downloadFile.read()) 
+        return downloadFile.headers['content-length']
+  
+
 def on_message(client, userdata, msg):
     print "headset: %s topic: %s payload: %s"%(userdata.uuid, msg.topic, str(msg.payload))
+    temp = json.loads(msg.payload)
+    userdata.playlists = temp['data']
 
 def on_connect(client, userdata, flags, rc):
     print "headset: %s Connected: %s "%(userdata.uuid, str(rc))
@@ -25,9 +42,10 @@ class Headset(threading.Thread):
         self._sd = 4 #4GB
         self._level = 0 
         self._wifi = 1 
-        self.playlist = list()
+        self.playlists = list()
         self._x = x
         self.viewerfunc = None
+        self.total_download = 0
 
     @property
     def uuid(self):
@@ -60,7 +78,7 @@ class Headset(threading.Thread):
 
     def run(self):
         if self.viewerfunc != None:
-            self.viewerfunc(self._x, "wifi","69","7GB","started", "blue")
+            self.viewerfunc(self._x, "wifi",self._level,self._sd,"started", "blue")
         md5 = hashlib.md5()
         md5.update(self._uuid + "qtchina")
         password = md5.hexdigest()
@@ -71,12 +89,18 @@ class Headset(threading.Thread):
         self._mqtt.connect(Headset.HOST, Headset.PORT, 60)
         self._mqtt.subscribe('/system/time',qos=2)
         self._mqtt.loop_start()
+        if self.viewerfunc != None:
+            self.viewerfunc(self._x, "wifi",self._level,self._sd,"connected", "blue")
         while True:
-           time.sleep(1)
-           print "running headset"
-           level = int(time.time()) % 100
-           if self.viewerfunc != None:
-               self.viewerfunc(self._x, "wifi",str(level),"7GB","connected", "blue")
+           time.sleep(3)
+           for playlist in self.playlists:
+               self.total_download += download(playlist['download_url'], self._uuid)
+               if self.viewerfunc != None:
+                  avaiable = self._sd - self.total_download/1024/1024/1024
+                  self.level -= 1
+                  self.viewerfunc(self._x, "wifi", self.level, avaiable, "downloading", "blue")
+
+
 
     def viewer(self, func):
         self.viewerfunc = func
