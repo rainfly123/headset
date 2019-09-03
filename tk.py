@@ -6,7 +6,7 @@ import client
 import tkSimpleDialog as dl  
 import tkinter.messagebox
 
-TOTAL = 100
+TOTAL = 50
 Current = 0
 headsets = []
 
