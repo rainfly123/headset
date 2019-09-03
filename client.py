@@ -17,7 +17,9 @@ def  download(url, uuid):
         downloadFile = urllib2.urlopen(url)
         with open(writeFileName,'wb') as output:
             output.write(downloadFile.read()) 
-        return downloadFile.headers['content-length']
+        
+    st = os.stat(writeFileName)
+    return st.st_size
   
 
 def on_message(client, userdata, msg):
