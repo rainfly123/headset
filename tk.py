@@ -84,14 +84,14 @@ class App():
        self.labels = dict()
 
    def create_menu(self):
-       menubar = tk.Menu(self.main, font=("Bold", 12))
-       fmenu = tk.Menu(menubar)
+       menubar = tk.Menu(self.main, font=("Bold", 13))
+       fmenu = tk.Menu(menubar, font=("Bold", 12))
        fmenu.add_command(label='自动', command=auto)
        fmenu.add_command(label='新建', command=create)
        fmenu.add_command(label='启动', command=start_headset)
        fmenu.add_command(label='退出', command=exit_loop)
  
-       amenu = tk.Menu(menubar)
+       amenu = tk.Menu(menubar, font=("Bold", 12))
        amenu.add_command(label='关于我们', command=About)
        amenu.add_command(label='联系我们', command=Contact)
  
@@ -114,11 +114,11 @@ class App():
        label.pack(side="left")
        label = tk.Label(frame, font=("Arial", 11), width=15, text='总存储', anchor="center")	
        label.pack(side="left")
-       label = tk.Label(frame, font=("Arial", 11), width=20, text='状态', anchor="center")	
+       label = tk.Label(frame, font=("Arial", 11), width=15, text='状态', anchor="center")	
        label.pack(side="left")
        frame.pack()
        self.vscrollbar = tk.Scrollbar(self.main)
-       self.c = tk.Canvas(self.main, background = "#D2D2D2",yscrollcommand=self.vscrollbar.set)
+       self.c = tk.Canvas(self.main, background = "#C2C2C2",yscrollcommand=self.vscrollbar.set)
 
        self.vscrollbar.config(command=self.c.yview)
        self.vscrollbar.pack(side=tk.RIGHT, fill=tk.Y) 
