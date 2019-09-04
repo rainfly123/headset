@@ -25,6 +25,8 @@ def auto():
 def create():
     global Current
     guess = myDialog(app.main)  
+    if guess.result is None:
+        return
     s = client.Headset(Current)
     s.uuid, s.level, s.sd  = guess.result
     app.create_item_bar(Current, s.uuid, s.sd) 
@@ -44,13 +46,13 @@ def exit_loop():
 class myDialog(dl.Dialog):
     def body(self, master):
         self.title("添加耳机设备")
-        tk.Label(master, text="设备序列号:").grid(row=0)
-        tk.Label(master, text="电池电量:").grid(row=1)
-        tk.Label(master, text="内存大小:").grid(row=2)
+        tk.Label(master, font=("Bold", 12), text="设备序列号:").grid(row=0)
+        tk.Label(master, font=("Bold", 12), text="电池电量:").grid(row=1)
+        tk.Label(master, font=("Bold", 12), text="内存大小:").grid(row=2)
 
-        self.e1 = tk.Entry(master)
-        self.e2 = tk.Entry(master)
-        self.e3 = tk.Entry(master)
+        self.e1 = tk.Entry(master, font=("Bold", 12))
+        self.e2 = tk.Entry(master, font=("Bold", 12))
+        self.e3 = tk.Entry(master, font=("Bold", 12))
 
         self.e1.grid(row=0, column=1)
         self.e2.grid(row=1, column=1)
@@ -74,7 +76,10 @@ class App():
    def __init__(self):
        self.main = tk.Tk()
        self.main.title("耳机模拟器")
-       self.main.geometry('1080x720') 
+       screenwidth = self.main.winfo_screenwidth()
+       screenheight = self.main.winfo_screenheight()
+       size = '%dx%d+%d+%d' % (1080, 720, (screenwidth - 1080)/2, (screenheight - 720)/2)
+       self.main.geometry(size)
        self.vars = dict()
        self.labels = dict()
 
