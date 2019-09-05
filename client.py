@@ -38,8 +38,10 @@ def OnLine(headset):
 def on_message(client, userdata, msg):
     print "headset: %s topic: %s"%(userdata.uuid, msg.topic)
     temp = json.loads(msg.payload)
-    userdata.playlists = temp['data']
-    print userdata.playlists 
+    businessCode = temp['businessCode']
+    if businessCode == 802:
+        data  = temp['data']
+        userdata.playlists = data
 
 def on_connect(client, userdata, flags, rc):
     if rc == 0:
@@ -124,12 +126,13 @@ class Headset(threading.Thread):
            if self.connect_error :
               continue 
            print "{0}  wait for mqtt".format(self.uuid)
-           for playlist in self.playlists:
-               self.total_download += download(playlist['downloadUrl'], self.uuid)
-               if self.viewerfunc != None:
-                  avaiable = self.sd - self.total_download/1024/1024/1024
-                  self.level -= 1
-                  self.viewerfunc(self._x, "wifi", self.level, avaiable, "downloading", "green")
+           for today in self.playlists:
+               for playlist in today["playInfoList"]:
+                   self.total_download += download(playlist['downloadUrl'], self.uuid)
+                   if self.viewerfunc != None:
+                      avaiable = self.sd - self.total_download/1024/1024/1024
+                      self.level -= 1
+                      self.viewerfunc(self._x, "wifi", self.level, avaiable, "downloading", "green")
 
 
 
