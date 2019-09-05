@@ -98,7 +98,7 @@ class Headset(threading.Thread):
         if self.viewerfunc != None:
             self.viewerfunc(self._x, "wifi",self._level,self._sd,"started", "blue")
         md5 = hashlib.md5()
-        md5.update(self._uuid + "qtchina")
+        md5.update(self._uuid + "qcchina")
         password = md5.hexdigest()
         print password
         self._mqtt.username_pw_set(self._uuid, password)
