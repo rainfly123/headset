@@ -1,4 +1,5 @@
 #!/usr/bin/env python
+#coding:utf8
 import paho.mqtt.client as mqtt
 import json
 import time
@@ -21,6 +22,18 @@ def  download(url, uuid):
     st = os.stat(writeFileName)
     return st.st_size
   
+def OnLine(headset):
+    msg = {
+    "businessCode": 808,
+    "data": {
+        "batteryUsage": headset.level,
+        "storageUsage": int(float(headset.total_download) / (headset.sd << 20) * 100),
+        "location": "中国",
+        "lastOnlineTime": time.strftime("%Y/%H/%d %H:%M:%S"),
+        "network": headset.wifi
+    }
+    }
+    return  json.dumps(msg)
 
 def on_message(client, userdata, msg):
     print "headset: %s topic: %s payload: %s"%(userdata.uuid, msg.topic, str(msg.payload))
@@ -29,12 +42,15 @@ def on_message(client, userdata, msg):
 
 def on_connect(client, userdata, flags, rc):
     print "headset: %s Connected: %s "%(userdata.uuid, str(rc))
+    client.publish(Headset.Publish%(userdata.uuid), OnLine(userdata), 2)
 
 class Headset(threading.Thread):
 
-    #HOST = "mqtt.smartheadset.qctchina.top"
-    HOST = "localhost"
+    HOST = "mqtt.smartheadset.qctchina.top"
+    #HOST = "localhost"
     PORT = 1883
+    Subscribe = "/hardware/from/server/%s"
+    Publish = "/hardware/from/client/%s"
 
 
     def __init__(self, x):
@@ -89,12 +105,13 @@ class Headset(threading.Thread):
         self._mqtt.on_connect = on_connect
         self._mqtt.on_message = on_message
         self._mqtt.connect(Headset.HOST, Headset.PORT, 60)
-        self._mqtt.subscribe('/system/time',qos=2)
+        self._mqtt.subscribe(Headset.Subscribe%(self._uuid), qos=2)
         self._mqtt.loop_start()
         if self.viewerfunc != None:
             self.viewerfunc(self._x, "wifi",self._level,self._sd,"connected", "yellow")
         while True:
            time.sleep(3)
+           print "{0}  wait for mqtt".format(self.uuid)
            for playlist in self.playlists:
                self.total_download += download(playlist['download_url'], self._uuid)
                if self.viewerfunc != None:
