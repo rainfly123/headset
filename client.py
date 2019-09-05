@@ -19,9 +19,10 @@ def  download(url, uuid):
         with open(writeFileName,'wb') as output:
             output.write(downloadFile.read()) 
         
-    st = os.stat(writeFileName)
-    return st.st_size
-  
+        st = os.stat(writeFileName)
+        return st.st_size
+    return 0 
+
 def OnLine(headset):
     msg = {
     "businessCode": 808,
@@ -120,7 +121,7 @@ class Headset(threading.Thread):
         self._mqtt.connect(Headset.HOST, Headset.PORT, 60)
         self._mqtt.loop_start()
         if self.viewerfunc != None:
-            self.viewerfunc(self._x, "wifi",self.level,self.sd,"connected", "yellow")
+            self.viewerfunc(self._x, "wifi",self.level,self.sd,"已连接", "yellow")
         while True:
            time.sleep(3)
            if self.connect_error :
@@ -128,11 +129,15 @@ class Headset(threading.Thread):
            print "{0}  wait for mqtt".format(self.uuid)
            for today in self.playlists:
                for playlist in today["playInfoList"]:
-                   self.total_download += download(playlist['downloadUrl'], self.uuid)
-                   if self.viewerfunc != None:
+                   download_size = download(playlist['downloadUrl'], self.uuid)
+                   if download_size > 0 and self.viewerfunc != None:
+                      self.total_download  += download_size
                       avaiable = self.sd - self.total_download/1024/1024/1024
-                      self.level -= 1
-                      self.viewerfunc(self._x, "wifi", self.level, avaiable, "downloading", "green")
+                      self.viewerfunc(self._x, "wifi", self.level, avaiable, "下载中", "green")
+
+           if self.total_download > 0:
+               self.viewerfunc(self._x, "wifi", self.level, avaiable, "全部完成", "green")
+           self.level -= 1
 
 
 
