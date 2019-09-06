@@ -37,7 +37,10 @@ def create():
 def start_headset():
     for  s in headsets:
         if s.is_alive() == False:
-            s.start()
+            try:
+                s.start()
+            except RuntimeError:  
+                pass
 
 def exit_loop():
     for  s in headsets:
