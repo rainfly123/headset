@@ -125,7 +125,7 @@ class Headset(threading.Thread):
         while True:
            time.sleep(3)
            if self.connect_error :
-              continue 
+               break
            print "{0}  wait for mqtt".format(self.uuid)
            for today in self.playlists:
                for playlist in today["playInfoList"]:

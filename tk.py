@@ -41,7 +41,10 @@ def start_headset():
 
 def exit_loop():
     for  s in headsets:
-        s.join()
+        s.connet_error = True
+        if s.is_alive():
+            s.join()
+    app.quit()
 
 class myDialog(dl.Dialog):
     def body(self, master):
@@ -82,18 +85,28 @@ class App():
        self.main.geometry(size)
        self.vars = dict()
        self.labels = dict()
+       self.auto_icon = tk.PhotoImage(file="image/auto.gif")
+       self.new_icon = tk.PhotoImage(file="image/new.gif")
+       self.play_icon = tk.PhotoImage(file="image/play.gif")
+       self.stop_icon = tk.PhotoImage(file="image/stop.gif")
+       self.close_icon = tk.PhotoImage(file="image/close.gif")
+       self.about_icon = tk.PhotoImage(file="image/happy.gif")
+       self.contact_icon = tk.PhotoImage(file="image/heart.gif")
+
+   def quit(self):
+       self.main.quit()
 
    def create_menu(self):
        menubar = tk.Menu(self.main, font=("Bold", 13))
        fmenu = tk.Menu(menubar, font=("Bold", 12))
-       fmenu.add_command(label='自动', command=auto)
-       fmenu.add_command(label='新建', command=create)
-       fmenu.add_command(label='启动', command=start_headset)
-       fmenu.add_command(label='退出', command=exit_loop)
+       fmenu.add_command(label='自动', compound=tk.LEFT, image=self.auto_icon, command=auto)
+       fmenu.add_command(label='新建', compound=tk.LEFT, image=self.new_icon, command=create)
+       fmenu.add_command(label='启动', compound=tk.LEFT, image=self.play_icon, command=start_headset)
+       fmenu.add_command(label='退出', compound=tk.LEFT, image=self.close_icon, command=exit_loop)
  
        amenu = tk.Menu(menubar, font=("Bold", 12))
-       amenu.add_command(label='关于我们', command=About)
-       amenu.add_command(label='联系我们', command=Contact)
+       amenu.add_command(label='关于我们', compound=tk.LEFT, image=self.about_icon, command=About)
+       amenu.add_command(label='联系我们', compound=tk.LEFT, image=self.contact_icon, command=Contact)
  
        menubar.add_cascade(label='文件',menu=fmenu)
        menubar.add_cascade(label='关于',menu=amenu)
