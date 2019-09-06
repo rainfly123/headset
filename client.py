@@ -124,7 +124,8 @@ class Headset(threading.Thread):
             self.viewerfunc(self._x, "wifi",self.level,self.sd,"已连接", "yellow")
         while True:
            time.sleep(3)
-           if self.connect_error :
+           if self.connect_error is True:
+               self._mqtt.disconnect()
                break
            print "{0}  wait for mqtt".format(self.uuid)
            for today in self.playlists:

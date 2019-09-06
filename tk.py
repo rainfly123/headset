@@ -39,12 +39,12 @@ def start_headset():
         if s.is_alive() == False:
             try:
                 s.start()
-            except RuntimeError:  
+            except RuntimeError:
                 pass
 
 def exit_loop():
     for  s in headsets:
-        s.connet_error = True
+        s.connect_error = True
         if s.is_alive():
             s.join()
     app.quit()
@@ -95,6 +95,35 @@ class App():
        self.close_icon = tk.PhotoImage(file="image/close.gif")
        self.about_icon = tk.PhotoImage(file="image/happy.gif")
        self.contact_icon = tk.PhotoImage(file="image/heart.gif")
+
+   def play(self, index):
+       print "start:", index
+       s = headsets[index]
+       if s.is_alive() == False:
+           try:
+               s.start()
+           except RuntimeError:  
+               pass
+
+   def stop(self, index):
+       print "stop:", index
+       s = headsets[index]
+       s.connect_error = True
+       if s.is_alive() == True:
+           s.join()
+       self.vars[index][3].set("已停止")
+       for x in self.labels[index]:
+           x['bg'] = "gray"
+
+   def popup(self, event, index):
+        popup_menu = tk.Menu(self.main, tearoff = 0)
+        popup_menu.add_separator()
+        popup_menu.add_command(label="启动",compound=tk.LEFT, image=self.play_icon, \
+                command=lambda :self.play(index))
+        popup_menu.add_command(label="停止", compound=tk.LEFT, image=self.stop_icon, \
+               command= lambda :self.stop(index))
+        # 在指定位置显示菜单
+        popup_menu.post(event.x_root,event.y_root)  
 
    def quit(self):
        self.main.quit()
@@ -186,10 +215,11 @@ class App():
        glabel = tk.Label(frame, width=17,  font=("Arial", 12), textvariable=self.vars[index][3])
        glabel.pack(side="left")
        frame.pack() 
- 
+
        self.labels[index] = [alabel, blabel, clabel, dlabel, elabel, flabel, glabel]
        for x in self.labels[index]:
            x['bg'] = "gray"
+           x.bind('<Button-3>',lambda event:self.popup(event, index))
        for x in self.vars[index]:
            x.set("Unknow")
 
