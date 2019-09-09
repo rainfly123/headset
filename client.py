@@ -36,6 +36,10 @@ def OnLine(headset):
     }
     return  json.dumps(msg)
 
+def send_message(headset, msg):
+    data = json.dumps(msg)
+    headset._mqtt.publish(Headset.Publish%(headset.uuid), data, 2) 
+
 def on_message(client, userdata, msg):
     print "headset: %s topic: %s"%(userdata.uuid, msg.topic)
     temp = json.loads(msg.payload)
@@ -115,6 +119,7 @@ class Headset(threading.Thread):
 
         self._mqtt = mqtt.Client(client_id = self.uuid, userdata=self)
         password = self.__getPassword()
+        print password
         self._mqtt.username_pw_set(self.uuid, password)
         self._mqtt.on_connect = on_connect
         self._mqtt.on_message = on_message
@@ -128,6 +133,12 @@ class Headset(threading.Thread):
                self._mqtt.disconnect()
                break
            print "{0}  wait for mqtt".format(self.uuid)
+           msg = {"businessCode":803, "data":[]}
+           for today in self.playlists:
+               msg['data'].append({"headsetDownloadResourceId":today['headsetDownloadResourceId'],\
+                                   "AckUpdateTime":today["updateTime"]})
+           send_message(self, msg)
+
            for today in self.playlists:
                for playlist in today["playInfoList"]:
                    download_size = download(playlist['downloadUrl'], self.uuid)
@@ -135,6 +146,7 @@ class Headset(threading.Thread):
                       self.total_download  += download_size
                       avaiable = self.sd - self.total_download/1024/1024/1024
                       self.viewerfunc(self._x, "wifi", self.level, avaiable, "下载中", "green")
+
 
            if self.total_download > 0:
                self.viewerfunc(self._x, "wifi", self.level, avaiable, "全部完成", "green")
