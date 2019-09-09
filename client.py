@@ -19,8 +19,11 @@ def  download(url, uuid):
         with open(writeFileName,'wb') as output:
             output.write(downloadFile.read()) 
         
-        st = os.stat(writeFileName)
-        return st.st_size
+        try:
+            st = os.stat(writeFileName)
+            return st.st_size
+        except OSError:
+            return 0
     return 0 
 
 def OnLine(headset):
@@ -133,22 +136,32 @@ class Headset(threading.Thread):
                self._mqtt.disconnect()
                break
            print "{0}  wait for mqtt".format(self.uuid)
+
+           #report playlist
            msg = {"businessCode":803, "data":[]}
            for today in self.playlists:
                msg['data'].append({"headsetDownloadResourceId":today['headsetDownloadResourceId'],\
                                    "AckUpdateTime":today["updateTime"]})
-           send_message(self, msg)
-
+           if len(msg['data']) > 0:
+               send_message(self, msg)
+           
+           #report download
+           dmsg = {"businessCode": 804, "data": []}
            for today in self.playlists:
                for playlist in today["playInfoList"]:
                    download_size = download(playlist['downloadUrl'], self.uuid)
-                   if download_size > 0 and self.viewerfunc != None:
+                   if download_size > 0 :
+                      dmsg['data'].append(playlist['headsetCourseResourceId'])
                       self.total_download  += download_size
                       avaiable = self.sd - self.total_download/1024/1024/1024
-                      self.viewerfunc(self._x, "wifi", self.level, avaiable, "下载中", "green")
+                      if self.viewerfunc != None:
+                          self.viewerfunc(self._x, "wifi", self.level, avaiable, "下载中", "green")
 
+           if len(dmsg['data']) > 0:
+               send_message(self, dmsg)
+               print dmsg
 
-           if self.total_download > 0:
+           if self.total_download > 0 and self.viewerfunc != None:
                self.viewerfunc(self._x, "wifi", self.level, avaiable, "全部完成", "green")
            self.level -= 1
 
