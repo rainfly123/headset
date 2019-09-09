@@ -33,7 +33,7 @@ def OnLine(headset):
         "batteryUsage": headset.level,
         "storageUsage": int(float(headset.total_download) / (headset.sd << 20) * 100),
         "location": "中国",
-        "lastOnlineTime": time.strftime("%Y/%H/%d %H:%M:%S"),
+        "lastOnlineTime": time.strftime("%Y-%H-%d %H:%M:%S"),
         "network": headset.wifi
     }
     }
@@ -170,8 +170,20 @@ class Headset(threading.Thread):
     def viewer(self, func):
         self.viewerfunc = func
 
+def time_stamp(timestr):
+    timesrt = time.strptime(timestr, "%Y-%m-%d")
+    return time.mktime(timesrt)
+
+def getFilesCreateTime(uuid):
+    mydir = os.path.join("data/%s"%(uuid))
+    for root, dirs, files in os.walk(mydir, topdown=False):
+        for name in files:
+            checkfile = os.path.join(mydir, name)
+            st = os.stat(checkfile)
+            return int(st.st_mtime)
 
 if __name__ == '__main__':
+    getFilesCreateTime("123456123456")
     d = Headset(1)
     d.uuid = "123456123456"
     d.wifi = "4G"
