@@ -8,12 +8,13 @@ import hashlib
 import os
 import urllib2
 
-def  download(url, uuid):
+def  download(url, uuid, resourceid):
     path = os.path.join("data", uuid)
     if os.path.exists(path) is False:
         os.mkdir(path)
-    fileName = os.path.basename(url)
-    writeFileName = os.path.join(path, fileName)
+    basename = os.path.basename(url)
+    suffix = os.path.splitext(basename)[1]
+    writeFileName = os.path.join(path, "{0}{1}".format(str(resourceid), suffix))
     if os.path.exists(writeFileName) is False:
         downloadFile = urllib2.urlopen(url)
         with open(writeFileName,'wb') as output:
@@ -149,7 +150,8 @@ class Headset(threading.Thread):
            dmsg = {"businessCode": 804, "data": []}
            for today in self.playlists:
                for playlist in today["playInfoList"]:
-                   download_size = download(playlist['downloadUrl'], self.uuid)
+                   download_size = download(playlist['downloadUrl'], self.uuid,\
+                                           playlist['headsetCourseResourceId'])
                    if download_size > 0 :
                       dmsg['data'].append(playlist['headsetCourseResourceId'])
                       self.total_download  += download_size
