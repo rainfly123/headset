@@ -106,6 +106,11 @@ class App():
            except RuntimeError:  
                pass
 
+   def playaudio(self, index):
+       s = headsets[index]
+       player.play(s)
+
+
    def stop(self, index):
        print "stop:", index
        s = headsets[index]
@@ -127,8 +132,12 @@ class App():
         popup_menu.post(event.x_root,event.y_root)  
 
    def player(self, event, index):
-       s = headsets[index]
-       player.play(s)
+       popup_menu = tk.Menu(self.main, tearoff = 0)
+       popup_menu.add_separator()
+       popup_menu.add_command(label="播放",compound=tk.LEFT, image=self.play_icon, \
+                command=lambda :self.playaudio(index))
+        # 在指定位置显示菜单
+       popup_menu.post(event.x_root,event.y_root)  
 
    def quit(self):
        self.main.quit()
