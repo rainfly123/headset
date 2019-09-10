@@ -5,6 +5,7 @@ import time
 import client
 import tkSimpleDialog as dl  
 import tkinter.messagebox
+import player
 
 TOTAL = 50
 Current = 0
@@ -125,6 +126,10 @@ class App():
         # 在指定位置显示菜单
         popup_menu.post(event.x_root,event.y_root)  
 
+   def player(self, event, index):
+       s = headsets[index]
+       player.play(s)
+
    def quit(self):
        self.main.quit()
 
@@ -220,6 +225,7 @@ class App():
        for x in self.labels[index]:
            x['bg'] = "gray"
            x.bind('<Button-3>',lambda event:self.popup(event, index))
+       glabel.bind('<Button-3>',lambda event:self.player(event, index))
        for x in self.vars[index]:
            x.set("Unknow")
 

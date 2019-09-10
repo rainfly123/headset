@@ -10,7 +10,7 @@ import urllib2
 import datetime
 
 def isToday(timestamp):
-    if timestamp > 1568082467000:
+    if timestamp >= 1568044800000:
         timestamp /= 1000
     input = datetime.date.fromtimestamp(timestamp)
     today = datetime.date.today()
@@ -158,14 +158,13 @@ class Headset(threading.Thread):
            #report download
            dmsg = {"businessCode": 804, "data": []}
            for today in self.playlists:
-               print today['playType'],today['playTime']
                for playlist in today["playInfoList"]:
-
                    #get today's playlist
                    if today['playType'] == 1:
-                       self.todayplaylist.append(playlist['headsetCourseResourceId'] + ".mp3")
+                       self.todayplaylist.append("{0}.mp3".format(playlist['headsetCourseResourceId']))
                    elif isToday(today['playTime']):
-                       self.todayplaylist.append(playlist['headsetCourseResourceId'] + ".mp3")
+                       print "eeee"
+                       self.todayplaylist.append("{0}.mp3".format(playlist['headsetCourseResourceId']))
 
                    download_size = download(playlist['downloadUrl'], self.uuid,\
                                            playlist['headsetCourseResourceId'])
@@ -187,6 +186,8 @@ class Headset(threading.Thread):
            print "\033[1;34;40m"
            print "#",self.todayplaylist
            print('\033[0m')
+           #player.play(self)
+           self.playlists = list()
 
 
 
