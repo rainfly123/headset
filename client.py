@@ -161,10 +161,13 @@ class Headset(threading.Thread):
                for playlist in today["playInfoList"]:
                    #get today's playlist
                    if today['playType'] == 1:
-                       self.todayplaylist.append("{0}.mp3".format(playlist['headsetCourseResourceId']))
+                       whichfile ="{0}.mp3".format(playlist['headsetCourseResourceId'])
+                       if self.todayplaylist.count(whichfile) == 0:
+                           self.todayplaylist.append(whichfile)
                    elif isToday(today['playTime']):
-                       print "eeee"
-                       self.todayplaylist.append("{0}.mp3".format(playlist['headsetCourseResourceId']))
+                       whichfile ="{0}.mp3".format(playlist['headsetCourseResourceId'])
+                       if self.todayplaylist.count(whichfile) == 0:
+                           self.todayplaylist.append(whichfile)
 
                    download_size = download(playlist['downloadUrl'], self.uuid,\
                                            playlist['headsetCourseResourceId'])
