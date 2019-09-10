@@ -67,11 +67,13 @@ class myDialog(dl.Dialog):
         return self.e1 # initial focus
 
     def apply(self):
-        uuid = self.e1.get()
-        level = int(self.e2.get())
-        sd = int(self.e3.get())
-
-        self.result = uuid,level, sd # or something
+        try:
+            uuid = self.e1.get()
+            level = int(self.e2.get())
+            sd = int(self.e3.get())
+            self.result = uuid,level, sd # or something
+        except ValueError:
+            tkinter.messagebox.showwarning('警告','别偷懒，把参数输入完整')
 
 def Contact():
     tkinter.messagebox.showinfo('联系我们','广州市黄浦区天丰路3号启明大厦1楼广州启辰电子公司')
