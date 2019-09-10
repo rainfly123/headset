@@ -7,6 +7,14 @@ import threading
 import hashlib
 import os
 import urllib2
+import datetime
+
+def isToday(timestamp):
+    if timestamp > 1568082467000:
+        timestamp /= 1000
+    input = datetime.date.fromtimestamp(timestamp)
+    today = datetime.date.today()
+    return input == today
 
 def  download(url, uuid, resourceid):
     path = os.path.join("data", uuid)
@@ -78,6 +86,7 @@ class Headset(threading.Thread):
         self._level = 0 
         self._wifi = 1 
         self.playlists = list()
+        self.todayplaylist = list()
         self._x = x
         self.viewerfunc = None
         self.total_download = 0
@@ -149,7 +158,15 @@ class Headset(threading.Thread):
            #report download
            dmsg = {"businessCode": 804, "data": []}
            for today in self.playlists:
+               print today['playType'],today['playTime']
                for playlist in today["playInfoList"]:
+
+                   #get today's playlist
+                   if today['playType'] == 1:
+                       self.todayplaylist.append(playlist['headsetCourseResourceId'] + ".mp3")
+                   elif isToday(today['playTime']):
+                       self.todayplaylist.append(playlist['headsetCourseResourceId'] + ".mp3")
+
                    download_size = download(playlist['downloadUrl'], self.uuid,\
                                            playlist['headsetCourseResourceId'])
                    if download_size > 0 :
@@ -161,11 +178,15 @@ class Headset(threading.Thread):
 
            if len(dmsg['data']) > 0:
                send_message(self, dmsg)
-               print dmsg
+               print "\033[1;31;40m", dmsg
+               print('\033[0m')
 
            if self.total_download > 0 and self.viewerfunc != None:
                self.viewerfunc(self._x, "wifi", self.level, avaiable, "全部完成", "green")
            self.level -= 1
+           print "\033[1;34;40m"
+           print "#",self.todayplaylist
+           print('\033[0m')
 
 
 
