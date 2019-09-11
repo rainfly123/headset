@@ -84,7 +84,7 @@ class Headset(threading.Thread):
         self._uuid =  "123456123456"
         self._sd = 4 #4GB
         self._level = 0 
-        self._wifi = 1 
+        self._wifi = "wifi"
         self.playlists = list()
         self.todayplaylist = list()
         self._x = x
