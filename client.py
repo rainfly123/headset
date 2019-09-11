@@ -141,7 +141,8 @@ class Headset(threading.Thread):
         if self.viewerfunc != None:
             self.viewerfunc(self._x, "wifi",self.level,self.sd,"已连接", "yellow")
         while True:
-           time.sleep(3)
+           time.sleep(5)
+           self._mqtt.publish(Headset.Publish%(self.uuid), OnLine(self), 2)
            if self.connect_error is True:
                self._mqtt.disconnect()
                break
