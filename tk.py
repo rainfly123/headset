@@ -98,6 +98,7 @@ class App():
        self.close_icon = tk.PhotoImage(file="image/close.gif")
        self.about_icon = tk.PhotoImage(file="image/happy.gif")
        self.contact_icon = tk.PhotoImage(file="image/heart.gif")
+       self.main.protocol("WM_DELETE_WINDOW", self.main.destroy)
 
    def play(self, index):
        print "start:", index
