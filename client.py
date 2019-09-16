@@ -191,6 +191,7 @@ class Headset(threading.Thread):
                    if download_size > 0 :
                       dmsg['data'].append(playlist['headsetCourseResourceId'])
                       self.total_download  += download_size
+                      self.level -= 1
                       avaiable = self.sd - self.total_download/1024/1024/1024
                       if self.viewerfunc != None:
                           self.viewerfunc(self._x, "wifi", self.level, avaiable, "下载中", "green")
@@ -202,7 +203,7 @@ class Headset(threading.Thread):
 
            if self.total_download > 0 and self.viewerfunc != None:
                self.viewerfunc(self._x, "wifi", self.level, avaiable, "全部完成", "green")
-           self.level -= 1
+
            print "\033[1;34;40m"
            print "#",self.todayplaylist
            print('\033[0m')
