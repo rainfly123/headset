@@ -35,6 +35,16 @@ def  download(url, uuid, resourceid):
             return 0
     return 0 
 
+def deletefiles(uuid, resourceid_list):
+    path = os.path.join("data", uuid)
+    for resourceid in resourceid_list:
+        file_name = os.path.join(path, resourceid)
+        try:
+            os.remove(file_name)
+        except OSError:
+            return -1
+    return 0
+
 def OnLine(headset):
     msg = {
     "businessCode": 808,
@@ -59,6 +69,11 @@ def on_message(client, userdata, msg):
     if businessCode == 802:
         data  = temp['data']
         userdata.playlists = data
+
+    elif businessCode == 809:
+        data  = temp['data']
+        if data['action'] == "delete":
+            userdata.deletelists = data
 
 def on_connect(client, userdata, flags, rc):
     if rc == 0:
@@ -91,6 +106,7 @@ class Headset(threading.Thread):
         self.viewerfunc = None
         self.total_download = 0
         self.connect_error  = False
+        self.deletelists = dict()
 
     @property
     def uuid(self):
@@ -192,6 +208,17 @@ class Headset(threading.Thread):
            print('\033[0m')
            #player.play(self)
            self.playlists = list()
+           
+           if self.deletelists.has_key('commandId'):
+               val = deletefiles(self.uuid, self.deletelists['param'])
+               if val == 0:
+                   msg = {
+                          "businessCode":809,
+                          "data":{
+                          "commandId":self.deletelists['commandId']}
+                          }
+                   send_message(self, msg)
+                   self.deletelists = dict()
 
 
 
