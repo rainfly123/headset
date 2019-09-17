@@ -50,7 +50,7 @@ def OnLine(headset):
     "businessCode": 808,
     "data": {
         "batteryUsage": headset.level,
-        "storageUsage": int(float(headset.total_download) / (headset.sd << 20) * 100),
+        "storageUsage": int(float(headset.total_download) / (headset.sd << 30) * 100),
         "location": "中国",
         "lastOnlineTime": time.strftime("%Y-%H-%d %H:%M:%S"),
         "network": headset.wifi
