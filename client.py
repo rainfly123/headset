@@ -65,6 +65,7 @@ def send_message(headset, msg):
 def on_message(client, userdata, msg):
     print "headset: %s topic: %s"%(userdata.uuid, msg.topic)
     temp = json.loads(msg.payload)
+    print temp
     businessCode = temp['businessCode']
     if businessCode == 802:
         data  = temp['data']
@@ -177,11 +178,12 @@ class Headset(threading.Thread):
            for today in self.playlists:
                for playlist in today["playInfoList"]:
                    #get today's playlist
-                   if today['playType'] == 1:
-                       whichfile ="{0}.mp3".format(playlist['headsetCourseResourceId'])
-                       if self.todayplaylist.count(whichfile) == 0:
-                           self.todayplaylist.append(whichfile)
-                   elif isToday(today['playTime']):
+                   #if today['playType'] == 1:
+                   #    whichfile ="{0}.mp3".format(playlist['headsetCourseResourceId'])
+                   #    if self.todayplaylist.count(whichfile) == 0:
+                   #        self.todayplaylist.append(whichfile)
+                   #elif isToday(today['playTime']):
+                   if isToday(today['playTime']):
                        whichfile ="{0}.mp3".format(playlist['headsetCourseResourceId'])
                        if self.todayplaylist.count(whichfile) == 0:
                            self.todayplaylist.append(whichfile)
